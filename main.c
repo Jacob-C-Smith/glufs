@@ -24,8 +24,8 @@ int main ( int argc, const char *argv[] )
     // Remove the old volume
     remove("image.glufs");
 
-    // Initialize glufs
-    glufs_init();
+    // TODO: Initialize glufs
+    // glufs_init();
 
     // Create a new glufs volume
     glufs_open(&_glufs, "GlooEffEss", "image.glufs");
