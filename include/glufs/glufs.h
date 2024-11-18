@@ -31,7 +31,6 @@ typedef struct glufs_s glufs;
 struct glufs_s
 {
     glufs_metadata  _metadata;
-    glufs_entry    *p_entries;
     FILE           *p_file;
 };
 
@@ -63,6 +62,9 @@ int glufs_open ( glufs *p_glufs, const char *name, const char *path );
  * @return 1 on success, 0 on error
  */
 int glufs_write ( glufs *p_glufs );
+
+// Add
+int glufs_file_add ( glufs *p_glufs, const char *path );
 
 // Close
 //

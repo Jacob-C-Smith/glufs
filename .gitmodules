@@ -4,3 +4,9 @@
 [submodule "extern/log"]
 	path = extern/log
 	url = https://github.com/Jacob-C-Smith/log
+[submodule "extern/tree"]
+	path = extern/tree
+	url = https://github.com/Jacob-C-Smith/tree
+[submodule "extern/tuple"]
+	path = extern/tuple
+	url = https://github.com/Jacob-C-Smith/tuple

@@ -22,16 +22,10 @@ int main ( int argc, const char *argv[] )
     glufs _glufs = { 0 };
 
     // Remove the old volume
-    remove("image.glufs");
+    remove("resources/image.glufs");
 
-    // TODO: Initialize glufs
-    // glufs_init();
-
-    // Create a new glufs volume
-    glufs_open(&_glufs, "GlooEffEss", "image.glufs");
-
-    // Write the volume to the filesystem
-    //glufs_write(&_glufs);
+    // Print metadata info
+    glufs_metadata_print(&_glufs._metadata);
 
     // Success
     return EXIT_SUCCESS;

@@ -1,5 +1,5 @@
-# Need CMake 3.28.0
-cmake_minimum_required (VERSION 3.28.0)
+# Need CMake 3.16.0
+cmake_minimum_required (VERSION 3.16.0)
 
 # The name of the repository
 project ("glufs")
@@ -44,6 +44,19 @@ if ( NOT "${HAS_SYNC}")
     endif()
 endif()
 
+# Find the tree module
+if ( NOT "${HAS_TREE}")
+    
+    # Add the tree directory
+    add_subdirectory(${CMAKE_SOURCE_DIR}/extern/tree ${CMAKE_SOURCE_DIR}/build/tree)
+
+    # Let any parent project know that this project has tree
+    if(NOT PROJECT_IS_TOP_LEVEL)
+        set(HAS_TREE true PARENT_SCOPE)
+        set(TREE_INCLUDE_DIR ${TREE_INCLUDE_DIR} PARENT_SCOPE)
+    endif()
+endif()
+
 # Add the glufs project
 if ( NOT "${HAS_GLUFS}")
 
@@ -68,6 +81,12 @@ add_executable (glufs_example "main.c")
 add_dependencies(glufs_example glufs log sync)
 target_include_directories(glufs_example PUBLIC ${GLUFS_INCLUDE_DIR} ${SYNC_INCLUDE_DIR} ${LOG_INCLUDE_DIR})
 target_link_libraries(glufs_example glufs log sync)
+
+# Add source to this project's executable.
+add_executable (archiver "archiver.c")
+add_dependencies(archiver glufs tree log sync)
+target_include_directories(archiver PUBLIC ${GLUFS_INCLUDE_DIR} ${TREE_INCLUDE_DIR} ${SYNC_INCLUDE_DIR} ${LOG_INCLUDE_DIR})
+target_link_libraries(archiver glufs tree log sync)
 
 # Add source to this project's library
 add_library (glufs SHARED "glufs.c" "entry.c" "metadata.c")

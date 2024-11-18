@@ -30,12 +30,17 @@ enum glufs_entry_type_e
 struct glufs_entry_s;
 
 // Type definitions
-typedef struct glufs_entry_s    glufs_entry;
+typedef struct glufs_entry_s glufs_entry;
 
 typedef int (*fn_entry_serializer) ( glufs_entry *p_entry , FILE *p_file );
 typedef int (*fn_entry_parser)     ( glufs_entry *p_result, FILE *p_file );
 
 // Struct definitions
+struct glufs_entry_allocator_s
+{
+    int x;  
+};
+
 struct glufs_entry_s
 {
     enum glufs_entry_type_e type;
@@ -45,7 +50,7 @@ struct glufs_entry_s
 
         struct
         {
-            char _name[54+1];
+            char _name[53+1];
             timestamp ts;
         } identifier;
 
@@ -68,6 +73,18 @@ struct glufs_entry_s
 };
 
 // Function declarations
+
+// Allocator Factory
+/** !
+ * Construct a bump allocator for glufs entries.
+ * 
+ * @param p_
+ * 
+ * @return 1 on success, 0 on error
+ */
+int glufs_construct_allocator (  );
+
+// Serializers
 /** !
  * Write an entry to a file
  * 
