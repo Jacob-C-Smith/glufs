@@ -109,12 +109,13 @@ int glufs_metadata_write ( glufs_metadata *p_metadata, FILE *p_file )
 
     // Initialized data
     unsigned char _metadata[glufs_metadata_size] = { 0 };
+    unsigned char checksum = 0;
 
     // Store the timestamp
     *((timestamp *)&_metadata[0]) = p_metadata->ts,
 
     // Store the checksum
-    *((unsigned char *)&_metadata[8]) = p_metadata->checksum,
+    *((unsigned char *)&_metadata[8]) = 0,
 
     // Store the block size
     *((unsigned short *)&_metadata[9]) = p_metadata->sizes.block_size,
@@ -127,6 +128,28 @@ int glufs_metadata_write ( glufs_metadata *p_metadata, FILE *p_file )
 
     // Store the total quantity of blocks
     *((unsigned long long *)&_metadata[33]) = p_metadata->sizes.total_blocks;
+
+    // Compute the checksum
+    for (size_t i = 0; i < sizeof(_metadata); i++) checksum += _metadata[i];
+    
+    // Compliment the checksum
+    checksum = ~checksum; 
+    
+    // Increment the checksum
+    checksum++;
+
+    // Store the checksum
+    p_metadata->checksum              = checksum,
+    *((unsigned char *)&_metadata[8]) = checksum;
+
+    // Clear the checksum
+    checksum = 0;
+
+    // (Re)compute the checksum
+    for (size_t i = 0; i < sizeof(_metadata); i++) checksum += _metadata[i];
+
+    // Check the checksum
+    if ( checksum != 0 ) goto checksum_invalid;
 
     // Write the metadata to the file
     fwrite(&_metadata, sizeof(glufs_metadata), 1, p_file);
@@ -150,6 +173,17 @@ int glufs_metadata_write ( glufs_metadata *p_metadata, FILE *p_file )
             no_file:
                 #ifndef NDEBUG
                     log_error("[glufs] Null pointer provided for \"p_file\" in call to function \"%s\"\n", __FUNCTION__);
+                #endif
+
+                // Error
+                return 0;
+        }
+
+        // Checksum
+        {
+            checksum_invalid:
+                #ifndef NDEBUG
+                    log_error("[glufs] Invalid checksum in call to function \"%s\"\n", __FUNCTION__);
                 #endif
 
                 // Error
